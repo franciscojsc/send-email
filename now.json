@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "env": {
+        "USER_EMAIL":"@email-user",
+        "PASS_EMAIL":"@email-pass",
+        "HOST_EMAIL":"@email-host",
+        "PORT_EMAIL":"@email-port"
+    },
+    "builds": [{
+        "src": "src/*.js",
+        "use": "@now/node-server"
+    }],
+    "routes": [{
+        "src": "/(.*)",
+        "dest": "src/index.js"
+    }]
+}
