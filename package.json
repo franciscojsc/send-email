@@ -1,14 +1,14 @@
 {
   "name": "send-email",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aplicação em NodeJS, que realiza envio de email",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["nodejs", "email"],
+  "author": "Francisco Chaves",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "nodemailer": "^6.4.2"
