@@ -1,34 +1,44 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const path = require('path');
+const bodyParser = require('body-parser');
 const app = express();
 
-const port = process.env.PORT | 3000;
-const userEmail = process.env.USER_EMAIL;
-const passEmail = process.env.PASS_EMAIL;
-const hostEmail = process.env.HOST_EMAIL;
-const portEmail = process.env.PORT_EMAIL;
+app.set('view engine', 'ejs');
+app.set('views', path.resolve(__dirname, 'views'));
 
-const transport = nodemailer.createTransport({
-    host: hostEmail,
-    port: portEmail,
-    auth: {
-        user: userEmail,
-        pass: passEmail
-    }
-});
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.render('home');
 });
 
-app.get('/send', (req, res) => {
+app.post('/send', (req, res) => {
+
+    const userReplayToEmail = req.body.email;
+    const textEmail = req.body.message;
+    const userEmail = process.env.USER_EMAIL;
+    const passEmail = process.env.PASS_EMAIL;
+    const hostEmail = process.env.HOST_EMAIL;
+    const portEmail = process.env.PORT_EMAIL;
+
+    const transport = nodemailer.createTransport({
+        host: hostEmail,
+        port: portEmail,
+        auth: {
+            user: userEmail,
+            pass: passEmail
+        }
+    });
 
     transport.sendMail({
         from: userEmail,
-        to: 'francisco.jschaves@gmail.com',
-        replyTo: 'francisco.jschaves@gmail.com',
-        subject: 'Olá seja bem vindo!',
-        text: 'Olá, muito obrigado por se cadastrar na nossa plataforma'
+        to: userEmail,
+        replyTo: userReplayToEmail,
+        subject: 'New message',
+        text: textEmail
     }).then(info => {
         res.send(info);
     }).catch(err => {
@@ -37,6 +47,8 @@ app.get('/send', (req, res) => {
 
 });
 
+const port = process.env.PORT | 3000;
+
 app.listen(port, () => {
     console.log(`Running on port ${port}!`);
-})
+});
