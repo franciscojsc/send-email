@@ -20,6 +20,10 @@ app.get('/error', (req, res) => {
     res.render('error');
 });
 
+app.get('/sucess', (req, res) => {
+    res.render('sucess');
+});
+
 app.post('/send', (req, res) => {
 
     const userReplayToEmail = req.body.email;
@@ -45,7 +49,7 @@ app.post('/send', (req, res) => {
         subject: 'New message',
         text: textEmail
     }).then(info => {
-        res.send(info);
+        res.redirect('/sucess');
     }).catch(err => {
         res.redirect('/error');
     })
