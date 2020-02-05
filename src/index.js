@@ -16,6 +16,10 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
+app.get('/error', (req, res) => {
+    res.render('error');
+});
+
 app.post('/send', (req, res) => {
 
     const userReplayToEmail = req.body.email;
@@ -43,10 +47,12 @@ app.post('/send', (req, res) => {
     }).then(info => {
         res.send(info);
     }).catch(err => {
-        res.send(err);
+        res.redirect('/error');
     })
 
 });
+
+
 
 const port = process.env.PORT | 3000;
 
