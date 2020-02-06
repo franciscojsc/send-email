@@ -1,4 +1,5 @@
 const express = require('express');
+const request = require('request');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -28,6 +29,13 @@ app.get('/sucess', (req, res) => {
 });
 
 app.post('/send', (req, res) => {
+    const recaptchaServer = process.env.CAPTCHA_SERVER;
+    const recaptchaResultClient = req.body['g-recaptcha-response'];
+    const ipConnection = req.connection.remoteAddress;
+
+    if (!verificationRecaptcha(recaptchaServer, recaptchaResultClient, ipConnection)) {
+        return res.redirect('/error');
+    }
 
     const userReplayToEmail = req.body.email;
     const textEmail = req.body.message;
@@ -49,7 +57,7 @@ app.post('/send', (req, res) => {
         from: userEmail,
         to: userEmail,
         replyTo: userReplayToEmail,
-        subject: 'New message',
+        subject: 'New message of send-email app',
         text: textEmail
     }).then(info => {
         res.redirect('/sucess');
@@ -59,7 +67,13 @@ app.post('/send', (req, res) => {
 
 });
 
-
+function verificationRecaptcha(secretKeyServer, recaptchaClient, ipConnection) {
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKeyServer}&response=${recaptchaClient}&remoteip=${ipConnection}`;
+    request(url, function (error, response, body) {
+        body = JSON.parse(body);
+        return !!body.success;
+    });
+}
 
 const port = process.env.PORT | 3000;
 
