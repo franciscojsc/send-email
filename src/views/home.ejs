@@ -15,9 +15,6 @@
     <div class="container ">
         <h1>Talk to me</h1>
         <form action="send" method="post">
-            <% if (!!recaptchaClient) { %>
-            <div class="g-recaptcha" data-sitekey="<%= recaptcha %>"></div>
-            <% } %>
             <label for="email">Email</label>
             <br />
             <input type="email" name="email" id="email" placeholder="Your email" required/>
@@ -26,6 +23,9 @@
             <br />
             <textarea name="message" id="message" cols="30" rows="10" placeholder="Your message" required></textarea>
             <br />
+            <% if (!!recaptchaClient) { %>
+            <div class="g-recaptcha" style="width: 300px; margin: 0 auto" data-sitekey="<%= recaptchaClient %>"></div>
+            <% } %>
             <button type="submit">Submit</button>
         </form>
     </div>
