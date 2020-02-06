@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', (req, res) => {
-    const recaptcha = process.env.CAPTCHA;
+    const recaptchaClient = process.env.CAPTCHA_CLIENT;
     res.render('home', {
-        recaptcha
+        recaptchaClient
     });
 });
 

@@ -5,7 +5,7 @@
         "PASS_EMAIL":"@email-pass",
         "HOST_EMAIL":"@email-host",
         "PORT_EMAIL":"@email-port",
-        "CAPTCHA":"@recaptcha"
+        "CAPTCHA_CLIENT":"@recaptcha-client"
     },
     "builds": [{
         "src": "src/*.js",

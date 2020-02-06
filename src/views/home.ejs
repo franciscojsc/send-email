@@ -7,7 +7,7 @@
     <title>contact</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
-    <% if (!!recaptcha) { %>
+    <% if (!!recaptchaClient) { %>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <% } %>
 </head>
@@ -15,7 +15,7 @@
     <div class="container ">
         <h1>Talk to me</h1>
         <form action="send" method="post">
-            <% if (!!recaptcha) { %>
+            <% if (!!recaptchaClient) { %>
             <div class="g-recaptcha" data-sitekey="<%= recaptcha %>"></div>
             <% } %>
             <label for="email">Email</label>
