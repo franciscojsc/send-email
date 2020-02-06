@@ -13,7 +13,10 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', (req, res) => {
-    res.render('home');
+    const recaptcha = process.env.CAPTCHA;
+    res.render('home', {
+        recaptcha
+    });
 });
 
 app.get('/error', (req, res) => {
