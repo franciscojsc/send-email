@@ -5,6 +5,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
 
+require('dotenv').config();
+
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(__dirname, 'views'));
 
@@ -67,9 +69,9 @@ app.post('/send', (req, res) => {
 
 });
 
-function verificationRecaptcha(secretKeyServer, recaptchaClient, ipConnection) {
+async function verificationRecaptcha(secretKeyServer, recaptchaClient, ipConnection) {
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKeyServer}&response=${recaptchaClient}&remoteip=${ipConnection}`;
-    request(url, function (error, response, body) {
+    await request(url, function (error, response, body) {
         body = JSON.parse(body);
         return !!body.success;
     });
