@@ -43,7 +43,7 @@ app.post('/send', async (req, res) => {
         const verificationRecaptcha = JSON.parse(await rp(url));
 
         if (!verificationRecaptcha.success) {
-            return res.redirect('/error');
+            return res.status(200).redirect('/error');
         }
     }
 
@@ -70,9 +70,9 @@ app.post('/send', async (req, res) => {
         subject: 'New message of send-email app',
         text: textEmail
     }).then(info => {
-        res.redirect('/sucess');
+        res.status(200).redirect('/sucess');
     }).catch(err => {
-        res.redirect('/error');
+        res.status(200).redirect('/error');
     });
 });
 
