@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request');
+const rp = require('request-promise');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -30,13 +31,20 @@ app.get('/sucess', (req, res) => {
     res.render('sucess');
 });
 
-app.post('/send', (req, res) => {
-    const recaptchaServer = process.env.CAPTCHA_SERVER;
-    const recaptchaResultClient = req.body['g-recaptcha-response'];
-    const ipConnection = req.connection.remoteAddress;
+app.post('/send', async (req, res) => {
 
-    if (!verificationRecaptcha(recaptchaServer, recaptchaResultClient, ipConnection)) {
-        return res.redirect('/error');
+    const recaptchaServer = process.env.CAPTCHA_SERVER;
+
+    if (!!recaptchaServer) {
+        const recaptchaResultClient = req.body['g-recaptcha-response'];
+        const ipConnection = req.connection.remoteAddress;
+        const url = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaServer}&response=${recaptchaResultClient}&remoteip=${ipConnection}`;
+
+        const verificationRecaptcha = JSON.parse(await rp(url));
+
+        if (!verificationRecaptcha.success) {
+            return res.redirect('/error');
+        }
     }
 
     const userReplayToEmail = req.body.email;
@@ -65,17 +73,8 @@ app.post('/send', (req, res) => {
         res.redirect('/sucess');
     }).catch(err => {
         res.redirect('/error');
-    })
-
-});
-
-async function verificationRecaptcha(secretKeyServer, recaptchaClient, ipConnection) {
-    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKeyServer}&response=${recaptchaClient}&remoteip=${ipConnection}`;
-    await request(url, function (error, response, body) {
-        body = JSON.parse(body);
-        return !!body.success;
     });
-}
+});
 
 const port = process.env.PORT | 3000;
 
