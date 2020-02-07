@@ -8,6 +8,23 @@ const app = express();
 
 require('dotenv').config();
 
+const port = process.env.PORT | 3000;
+const recaptchaClient = process.env.CAPTCHA_CLIENT;
+const recaptchaServer = process.env.CAPTCHA_SERVER;
+const userEmail = process.env.USER_EMAIL;
+const passEmail = process.env.PASS_EMAIL;
+const hostEmail = process.env.HOST_EMAIL;
+const portEmail = process.env.PORT_EMAIL;
+
+const transport = nodemailer.createTransport({
+    host: hostEmail,
+    port: portEmail,
+    auth: {
+        user: userEmail,
+        pass: passEmail
+    }
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(__dirname, 'views'));
 
@@ -17,7 +34,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', (req, res) => {
-    const recaptchaClient = process.env.CAPTCHA_CLIENT;
     res.render('home', {
         recaptchaClient
     });
@@ -33,8 +49,6 @@ app.get('/sucess', (req, res) => {
 
 app.post('/send', async (req, res) => {
 
-    const recaptchaServer = process.env.CAPTCHA_SERVER;
-
     if (!!recaptchaServer) {
         const recaptchaResultClient = req.body['g-recaptcha-response'];
         const ipConnection = req.connection.remoteAddress;
@@ -42,26 +56,11 @@ app.post('/send', async (req, res) => {
 
         const verificationRecaptcha = JSON.parse(await rp(url));
 
-        if (!verificationRecaptcha.success) {
-            return res.status(200).redirect('/error');
-        }
+        if (!verificationRecaptcha.success) return res.status(200).redirect('/error');
     }
 
     const userReplayToEmail = req.body.email;
     const textEmail = req.body.message;
-    const userEmail = process.env.USER_EMAIL;
-    const passEmail = process.env.PASS_EMAIL;
-    const hostEmail = process.env.HOST_EMAIL;
-    const portEmail = process.env.PORT_EMAIL;
-
-    const transport = nodemailer.createTransport({
-        host: hostEmail,
-        port: portEmail,
-        auth: {
-            user: userEmail,
-            pass: passEmail
-        }
-    });
 
     transport.sendMail({
         from: userEmail,
@@ -75,8 +74,6 @@ app.post('/send', async (req, res) => {
         res.status(200).redirect('/error');
     });
 });
-
-const port = process.env.PORT | 3000;
 
 app.listen(port, () => {
     console.log(`Running on port ${port}!`);
