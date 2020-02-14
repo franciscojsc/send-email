@@ -1,6 +1,5 @@
 const express = require('express');
-const request = require('request');
-const rp = require('request-promise');
+const axios = require('axios');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -9,6 +8,7 @@ const app = express();
 require('dotenv').config();
 
 const port = process.env.PORT | 3000;
+const URL = `https://www.google.com/recaptcha/api/siteverify`;
 const recaptchaClient = process.env.CAPTCHA_CLIENT;
 const recaptchaServer = process.env.CAPTCHA_SERVER;
 const userEmail = process.env.USER_EMAIL;
@@ -48,17 +48,18 @@ app.get('/sucess', (req, res) => {
 });
 
 app.post('/send', async (req, res) => {
-
     if (!!recaptchaServer) {
-        const recaptchaResultClient = req.body['g-recaptcha-response'];
+        const recaptchaResultClient = req.body["g-recaptcha-response"];
         const ipConnection = req.connection.remoteAddress;
-        const url = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaServer}&response=${recaptchaResultClient}&remoteip=${ipConnection}`;
-
-        const verificationRecaptcha = JSON.parse(await rp(url));
-
-        if (!verificationRecaptcha.success) return res.status(200).redirect('/error');
+        const url = `${URL}?secret=${recaptchaServer}&response=${recaptchaResultClient}&remoteip=${ipConnection}`;
+        try {
+            const { data } = await axios.get(url);
+            if (!data.success) return res.status(200).redirect("/error");
+        } catch (error) {
+            console.error("Error", error);
+        }
     }
-
+    
     const userReplayToEmail = req.body.email;
     const textEmail = req.body.message;
 
